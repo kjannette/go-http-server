@@ -1,4 +1,4 @@
-# Go boilerplate project
+# Go skeleton http server
 
 ### A simple Go http server boilerplate project equipped with the essentials.
 
