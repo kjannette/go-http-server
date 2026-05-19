@@ -8,7 +8,6 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// init initializes zap's global loggers (i.e. zap.L() and zap.S()).
 // Log level is retrieved from environment variable LOG_LEVEL, defaulting to "info" otherwise.
 // To activate this facility, add a blank import to this package.
 func init() {

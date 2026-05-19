@@ -5,7 +5,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Config represents the application configuration.
 type Config struct {
 	API struct {
 		Port         int `envconfig:"API_PORT" default:"3000"`
@@ -16,7 +15,6 @@ type Config struct {
 	}
 }
 
-// NewConfig creates a new initialised application Config.
 func NewConfig() (*Config, error) {
 	var config Config
 

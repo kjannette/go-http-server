@@ -1,9 +1,9 @@
 .PHONY: *
 
-help: ## This help dialog.
+help: 
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2 | "sort -u"}' $(MAKEFILE_LIST)
 
-check-docker: ## Verify Docker CLI is available
+check-docker: ## Verify Docker CLI available
 	@command -v docker >/dev/null 2>&1 || { \
 		echo "Error: docker not found."; \
 		echo "Install Docker Desktop: https://docs.docker.com/desktop/setup/install/mac-install/"; \
@@ -17,20 +17,20 @@ run: check-docker ## Start the application with Docker Compose
 run-local: ## Start the application locally (without Docker)
 	go run ./cmd/app
 
-down: check-docker ## Stop the application
+down: check-docker 
 	docker compose down --remove-orphans
 
 setup-local: copy-config install-dependencies ## Install config and Go dependencies
 
 setup-docker: setup-local run ## Install dependencies and start with Docker Compose
 
-install-lint: ## Install Go lint
+install-lint:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 install-dependencies: ## Install Go project dependencies
 	go mod download
 
-copy-config: ## Copy config file if missing
+copy-config:
 	@test -f .env || cp .env.dist .env
 
 lint: install-lint ## Run lint
