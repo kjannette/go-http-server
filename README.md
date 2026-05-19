@@ -1,6 +1,6 @@
 # Go boilerplate project
 
-### A straightforward Go boilerplate project equipped with essential definitions to kickstart your project.
+### A simple Go http server boilerplate project equipped with essentials for a go http server.
 
 ## How to run the application
 1 - Copy the .env.dist to .env (you can edit the values if you want)
