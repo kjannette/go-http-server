@@ -1,6 +1,6 @@
 # Go HTTP server
 
-A simple Go HTTP server boilerplate with Echo, structured logging, graceful shutdown, and Docker support.
+A simple Go HTTP server boilerplate with Echo, structured logging, and Docker support.
 
 ## Prerequisites
 
