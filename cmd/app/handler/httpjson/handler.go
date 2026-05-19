@@ -31,16 +31,6 @@ func New(logger *zap.Logger) (*echo.Echo, Handler) {
 
 // RunServer runs http server and listens until context is canceled.
 func (h *Handler) RunServer(ctx context.Context, conf *config.Config, e *echo.Echo) error {
-	go func() {
-		<-ctx.Done()
-
-		timeout, cancel := context.WithTimeout(context.Background(), time.Duration(conf.API.ReadTimeout)*time.Second)
-		defer cancel()
-
-		_ = e.Shutdown(timeout) // try gracefully first
-		_ = e.Close()           // immediate termination
-	}()
-
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", conf.API.Port),
 		ReadTimeout:  time.Duration(conf.API.ReadTimeout) * time.Second,
@@ -48,7 +38,18 @@ func (h *Handler) RunServer(ctx context.Context, conf *config.Config, e *echo.Ec
 		IdleTimeout:  time.Duration(conf.API.IdleTimeout) * time.Second,
 	}
 
-	if err := e.StartServer(server); !errors.Is(err, http.ErrServerClosed) {
+	go func() {
+		<-ctx.Done()
+
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), time.Duration(conf.API.ReadTimeout)*time.Second)
+		defer cancel()
+
+		if err := server.Shutdown(shutdownCtx); err != nil {
+			h.logger.Warn("graceful shutdown failed", zap.Error(err))
+		}
+	}()
+
+	if err := e.StartServer(server); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return errors.Wrap(err, "server error")
 	}
 
