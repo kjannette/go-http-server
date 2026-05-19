@@ -1,29 +1,22 @@
-package config
+package os
 
 import (
-	"github.com/pkg/errors"
+	"context"
+	stdlib "os"
+	"os/signal"
+	"syscall"
 
-	"github.com/kelseyhightower/envconfig"
+	"go.uber.org/zap"
 )
 
-// Config represents the application configuration.
-type Config struct {
-	API struct {
-		Port         int `envconfig:"API_PORT" default:"3000"`
-		ReadTimeout  int `envconfig:"API_READ_TIMEOUT" default:"7"`
-		WriteTimeout int `envconfig:"API_WRITE_TIMEOUT" default:"5"`
-		IdleTimeout  int `envconfig:"API_IDLE_TIMEOUT" default:"5"`
-		Timeout      int `envconfig:"API_TIMEOUT" default:"5"`
-	}
-}
+// SignalListener listens for SIGINT and SIGTERM and cancels the root context.
+func SignalListener(logger *zap.Logger, cancel context.CancelFunc) {
+	sigCh := make(chan stdlib.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 
-// NewConfig creates a new initialised application Config.
-func NewConfig() (*Config, error) {
-	var config Config
-
-	if err := envconfig.Process("", &config); err != nil {
-		return nil, errors.Wrap(err, "error parsing config")
-	}
-
-	return &config, nil
+	go func() {
+		sig := <-sigCh
+		logger.Info("received shutdown signal", zap.String("signal", sig.String()))
+		cancel()
+	}()
 }

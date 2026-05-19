@@ -3,9 +3,8 @@ package main
 import (
 	"context"
 
-	"github.com/kjannette/go-http-server/cmd/app/handler/httpjson"
-	"github.com/kjannnette/go-http-server/internal/config"
-	"github.com/kjannette/go-http-server/pkg/logger"
+	"github.com/kjannette/go_http_server/cmd/app/handler/httpjson"
+	"github.com/kjannette/go_http_server/internal/config"
 
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
@@ -16,14 +15,13 @@ func run(ctx context.Context, cfg *config.Config) error {
 
 	eg, ctx := errgroup.WithContext(ctx)
 	app, h := httpjson.New(lg)
+	serverLog := lg.Named("run_server")
 
-	eg.Go(func(l logger.Logger) func() error {
-		return func() error {
-			l.Info("starting server")
-			defer l.Info("terminated server")
-			return h.RunServer(ctx, cfg, app)
-		}
-	}(lg.Named("run_server")))
+	eg.Go(func() error {
+		serverLog.Info("starting server")
+		defer serverLog.Info("terminated server")
+		return h.RunServer(ctx, cfg, app)
+	})
 
 	return eg.Wait()
 }

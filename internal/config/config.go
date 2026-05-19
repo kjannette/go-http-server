@@ -1,9 +1,8 @@
 package config
 
 import (
-	"github.com/pkg/errors"
-
 	"github.com/kelseyhightower/envconfig"
+	"github.com/pkg/errors"
 )
 
 // Config represents the application configuration.

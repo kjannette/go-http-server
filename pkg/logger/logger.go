@@ -1,22 +1,12 @@
 package logger
 
 import (
-    "log"
-    "os"
-    "go.uber.org/zap"
-    "go.uber.go/zap/zapcore"
+	"log"
+	"os"
+
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
-
-type Logger interface {
-	Debug(msg string, fields ...zap.Field)
-	Info(msg string, fields ...zap.Field)
-	Warn(msg string, fields ...zap.Field)
-	Error(msg string, fields ...zap.Field)
-	With(fields ...zap.Field) *zap.Logger
-}
-
-// Option is a function to provide the Logger creation with extra initialisation options.
-type Option func(*zap.Config)
 
 // init initializes zap's global loggers (i.e. zap.L() and zap.S()).
 // Log level is retrieved from environment variable LOG_LEVEL, defaulting to "info" otherwise.
