@@ -39,5 +39,7 @@ lint: install-lint ## Run lint
 tests: ## Run tests
 	go test -v ./...
 
+validation: lint tests ## Run lint and tests
+
 build: ## Build the server binary
 	go build -o bin/server ./cmd/app
