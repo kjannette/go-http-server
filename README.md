@@ -1,28 +1,80 @@
-# Go skeleton http server
+# Go HTTP server
 
-### A simple Go http server boilerplate project equipped with the essentials.
+A simple Go HTTP server boilerplate with Echo, structured logging, graceful shutdown, and Docker support.
 
-## How to run the application
-1 - Copy the .env.dist to .env (you can edit the values if you want)
+## Prerequisites
 
-`$ cp .env.dist .env`
+- Go 1.25+
+- Docker and Docker Compose (for containerized runs)
 
-2 - Run make command, it will show the list of commands we have to make easier to start the application.
+## Configuration
 
-`$ make`
+Copy the example environment file and adjust values if needed:
 
-3 - Start the application
+```bash
+cp .env.dist .env
+```
 
-`$ make setup-local`
+The application reads configuration from process environment variables (via [envconfig](https://github.com/kelseyhightower/envconfig)). Docker Compose loads `.env` automatically. For a local `go run`, export variables or source the file:
 
-4 - Run the tests
+```bash
+set -a && source .env && set +a
+```
 
-`$ make tests`
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `LOG_LEVEL` | `info` | Zap log level (`debug`, `info`, `warn`, `error`) |
+| `API_PORT` | `3000` | HTTP listen port |
+| `API_READ_TIMEOUT` | `7` | Server read timeout (seconds) |
+| `API_WRITE_TIMEOUT` | `5` | Server write timeout (seconds) |
+| `API_IDLE_TIMEOUT` | `5` | Server idle timeout (seconds) |
+| `API_TIMEOUT` | `5` | Reserved for future use |
 
-5 - Run the lint
+Inside Docker, the process always listens on port `3000`; `API_PORT` in `.env` controls the host port mapping.
 
-`$ make lint`
+## Run with Docker (recommended)
 
-6 - Run all the validations (lint + tests)
+```bash
+make setup-docker   # copy .env, download modules, build and start containers
+```
 
-`$ make validation`
+Or step by step:
+
+```bash
+make setup-local    # copy .env (if missing) and go mod download
+make run            # docker compose up --build
+```
+
+Verify:
+
+```bash
+curl http://localhost:3000/health
+```
+
+Stop:
+
+```bash
+make down
+```
+
+## Run locally (without Docker)
+
+```bash
+make setup-local
+make run-local
+```
+
+## Build binary
+
+```bash
+make build
+./bin/server
+```
+
+## Make targets
+
+```bash
+make help
+```
+
+Common targets: `run`, `run-local`, `down`, `setup-local`, `setup-docker`, `build`, `tests`, `lint`.

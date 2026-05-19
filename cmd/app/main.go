@@ -3,16 +3,17 @@ package main
 import (
 	"context"
 
-	"github.com/felipecoppola/go-boilerplate/internal/config"
-	"github.com/felipecoppola/go-boilerplate/internal/infrastructure/os"
+	"github.com/kjannette/go_http_server/internal/config"
+	infrasignal "github.com/kjannette/go_http_server/internal/infrastructure/os"
+	_ "github.com/kjannette/go_http_server/pkg/logger"
 
 	"go.uber.org/zap"
 )
 
 // Globals that are set at build time.
 var (
-	appName    = ""
-	appVersion = ""
+	appName    = "go-http-server"
+	appVersion = "dev"
 )
 
 func main() {
@@ -28,15 +29,15 @@ func main() {
 
 	cfg, err := config.NewConfig()
 	if err != nil {
-		logger.Error("error creating config: %w", zap.Error(err))
+		logger.Error("error creating config", zap.Error(err))
 		return
 	}
 
 	logger.Info("starting app")
-	os.SignalListener(logger, cancel)
+	infrasignal.SignalListener(logger, cancel)
 
 	if err = run(ctx, cfg); err != nil {
-		logger.Error("command failed: %w", zap.Error(err))
+		logger.Error("command failed", zap.Error(err))
 		return
 	}
 
